@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/HP/Downloads",
-      "program": "c:/Users/HP/Downloads/build/Debug/outDebug",
+      "cwd": "c:/Users/HP/Documents/DATA_STRUCTURE/LAB-1",
+      "program": "c:/Users/HP/Documents/DATA_STRUCTURE/LAB-1/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
