@@ -53,7 +53,7 @@ void inorder(Node* root){
         cout << root->data << "(null)";
     }
     else{
-        cout << root->data << "("<<root->parent->data<< ")";
+        cout << root->data << "(" <<root->parent->data<< ")";
     }
     inorder(root->right);
 }
@@ -135,21 +135,33 @@ int main(){
         inorder(root);
         cout << endl;
     }
-
-    cout << "\n1 Inorder:\n";
-    inorder(root);
-    cout << endl;
-
-    cout << "\n2 Preorder:\n";
-    preorder(root);
-    cout << endl;
-
-    cout << "\n3 Postorder:\n";
-    postorder(root);
-    cout << endl;
-
-    cout << "\n4 Level order:\n";
-    level_order(root);
+     int b;
+    while (true) {
+        cin >> b;
+        switch (b) {
+            case 1:
+                cout << "\n1 Inorder:\n";
+                inorder(root);
+                cout << endl;
+                break;
+            case 2:
+                cout << "\n2 Preorder:\n";
+                preorder(root);
+                cout << endl;
+                break;
+            case 3:
+                cout << "\n3 Postorder:\n";
+                postorder(root);
+                cout << endl;
+                break;
+            case 4:
+                cout << "\n4 Level order:\n";
+                level_order(root);
+                break;
+            case 5:
+                return 0;
+        }
+    }
 
     return 0;
 }
