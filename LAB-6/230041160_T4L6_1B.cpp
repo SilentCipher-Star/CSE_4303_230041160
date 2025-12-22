@@ -1,104 +1,168 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <algorithm>
+
 using namespace std;
 
-struct Node {
+struct Node
+{
     int data;
     int height;
-    Node* left;
-    Node* right;
-    Node(int val) {
+    Node *left;
+    Node *right;
+    Node *parent;
+
+    Node(int val)
+    {
         data = val;
-        height = 0; // leaf node height
-        left = right = nullptr;
+        height = 0;
+        left = right = parent = NULL;     
     }
 };
 
-// Insert node into BST and update heights
-Node* insert(Node* root, int val) {
-    if (!root) return new Node(val);
-    if (val < root->data)
-        root->left = insert(root->left, val);
+Node *root = NULL;
+
+void Insert(int data)
+{
+    Node *newNode = new Node(data);
+    Node *temp = root;
+    Node *target = NULL;
+
+    if (temp == NULL)
+    {
+        root = newNode;
+        return;
+    }
+
+    while (temp != NULL)
+    {
+        target = temp;
+        if (newNode->data < temp->data)
+            temp = temp->left;
+        else
+            temp = temp->right;
+    }
+
+    newNode->parent = target;
+
+    if (newNode->data < target->data)
+        target->left = newNode;
     else
-        root->right = insert(root->right, val);
+        target->right = newNode;
 
-    int leftHeight = root->left ? root->left->height : -1;
-    int rightHeight = root->right ? root->right->height : -1;
-    root->height = 1 + max(leftHeight, rightHeight);
-    return root;
+    Node *curr = target;
+    while (curr != NULL)
+    {
+        int left_h = (curr->left) ? curr->left->height : -1;
+        int right_h = (curr->right) ? curr->right->height : -1;
+        curr->height = 1 + max(left_h, right_h);
+        curr = curr->parent;
+    }
 }
 
-// Inorder traversal with height
-void inorder(Node* root) {
-    if (!root) return;
-    inorder(root->left);
-    cout << root->data << "(" << root->height << ") ";
-    inorder(root->right);
+void arrange_tree(Node *node)
+{
+    if (node == NULL)
+        return;
+    arrange_tree(node->left);
+    cout << node->data << "(" << node->height << ")" << " ";
+    arrange_tree(node->right);
 }
 
-// Find Lowest Common Ancestor (LCA)
-Node* LCA(Node* root, int x, int y) {
-    if (!root) return nullptr;
-    if (root->data > x && root->data > y)
-        return LCA(root->left, x, y);
-    if (root->data < x && root->data < y)
-        return LCA(root->right, x, y);
-    return root; // this is LCA
+int LCA(int a, int b)
+{
+    Node *curr = root;
+    while (curr != NULL)
+    {
+        if (a < curr->data && b < curr->data)
+            curr = curr->left;
+        else if (a > curr->data && b > curr->data)
+            curr = curr->right;
+        else
+            break;
+    }
+    if (curr != NULL)
+        return curr->data;
+    return -1;
 }
 
-// Find path from root to key
-bool findPath(Node* root, int key, vector<int>& path) {
-    if (!root) return false;
-    path.push_back(root->data);
-    if (root->data == key) return true;
-
-    if ((root->data > key && findPath(root->left, key, path)) ||
-        (root->data < key && findPath(root->right, key, path)))
-        return true;
-
-    path.pop_back();
-    return false;
+Node *Search(Node *x, int key)
+{
+    while (x != NULL && x->data != key)
+    {
+        if (key < x->data){
+            x = x->left;
+        }
+        else{
+            x = x->right;
+        }
+    }
+    return x;
 }
 
-// Print path and length between two nodes
-void printPathBetween(Node* root, int x, int y) {
-    Node* lca = LCA(root, x, y);
-
-    vector<int> path1, path2;
-    findPath(lca, x, path1);
-    findPath(lca, y, path2);
-
-    reverse(path1.begin(), path1.end()); // x → LCA
-
-    vector<int> fullPath = path1;
-    for (int i = 1; i < path2.size(); i++) // LCA already included
-        fullPath.push_back(path2[i]);
-
-    for (int val : fullPath)
-        cout << val << " ";
-    cout << "\n" << fullPath.size() << "\n";
-}
-
-int main() {
-    Node* root = nullptr;
-    int val;
-
-    // Insert values into BST
-    while (cin >> val && val != -1) {
-        root = insert(root, val);
+void print_route(Node *x, Node *y, Node *z)
+{
+    int count = 0;
+    Node *temp = x;
+    if (x != z)
+    {
+        while (temp != z)
+        {
+            cout << temp->data << " ";
+            count++;
+            temp = temp->parent;
+        }
+        cout << z->data << " ";
+        count++;
     }
 
+    if (y != z)
+    {
+        temp = z->right;
+        while (temp != y)
+        {
+            if (temp->data < y->data)
+            {
+                cout << temp->data << " ";
+                count++;
+                temp = temp->right;
+            }
+            else
+            {
+                cout << temp->data << " ";
+                count++;
+                temp = temp->left;
+            }
+        }
+        cout << y->data << " ";
+        count++;
+    }
+    cout << "\n"
+         << count << "\n";
+}
+
+int main()
+{
+    int n;
+    while (cin >> n && n != -1)
+    {
+        Insert(n);
+    }
     cout << "Status: ";
-    inorder(root);
-    cout << "\n";
+    arrange_tree(root);
+    cout << endl;
 
-    // Handle queries
-    int q;
-    cin >> q; // number of queries
-    for (int i = 0; i < q; i++) {
-        int x, y;
-        cin >> x >> y;
-        printPathBetween(root, x, y);
+    while (true)
+    {
+        int a, b;
+        cin >> a >> b;
+        int count = 0;
+        int c = LCA(a, b);
+        Node *x = Search(root, a);
+        Node *y = Search(root, b);
+        Node *z = Search(root, c);
+        print_route(x, y, z);
+        cout << endl;
+        // cout << "\n" << count << endl;
     }
-
     return 0;
 }
