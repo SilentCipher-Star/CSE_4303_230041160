@@ -21,41 +21,36 @@ struct Node
 
 Node *root = NULL;
 
-void Insert(int data)
-{
-    Node *newNode = new Node(data);
-    Node *temp = root;
-    Node *target = NULL;
+void insert(Node* &root, int x){
+    Node* newnode = new Node();
+    newnode->data = x;
+    newnode->left = newnode->right = newnode->parent = NULL;
+    newnode->height = 0;
 
-    if (temp == NULL)
-    {
-        root = newNode;
+    if(root == NULL){
+        root = newnode;
         return;
     }
 
-    while (temp != NULL)
-    {
+    Node* temp = root;
+    Node* target = NULL;
+    while(temp){
         target = temp;
-        if (newNode->data < temp->data)
-            temp = temp->left;
-        else
-            temp = temp->right;
+        if(x < temp->data) temp = temp->left;
+        else temp = temp->right;
     }
 
-    newNode->parent = target;
+    newnode->parent = target;
+    if(x < target->data) target->left = newnode;
+    else target->right = newnode;
 
-    if (newNode->data < target->data)
-        target->left = newNode;
-    else
-        target->right = newNode;
-
-    Node *curr = target;
-    while (curr != NULL)
-    {
-        int left_h = (curr->left) ? curr->left->height : -1;
-        int right_h = (curr->right) ? curr->right->height : -1;
-        curr->height = 1 + max(left_h, right_h);
-        curr = curr->parent;
+    while(target){
+        int lh = (target->left ? target->left->height : -1);
+        int rh = (target->right ? target->right->height : -1);
+        int h = max(lh, rh) + 1;
+        if(target->height == h) break;
+        target->height = h;
+        target = target->parent;
     }
 }
 
@@ -145,7 +140,7 @@ int main()
     int n;
     while (cin >> n && n != -1)
     {
-        Insert(n);
+        insert(root,n);
     }
     cout << "Status: ";
     arrange_tree(root);

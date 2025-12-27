@@ -53,7 +53,7 @@ void inorder(Node* root){
         cout << root->data << "(null)";
     }
     else{
-        cout << root->data << "(" <<root->parent->data<< ")";
+        cout << root->data << "("<<root->parent->data<< ")";
     }
     inorder(root->right);
 }

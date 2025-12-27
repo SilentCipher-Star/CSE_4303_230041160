@@ -19,7 +19,7 @@ void insert(Node* &root, int x){
 
     if(root == NULL){
         root = newnode;
-        return;
+        return; 
     }
 
     Node* temp = root;
