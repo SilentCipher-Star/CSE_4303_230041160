@@ -48,6 +48,7 @@ void inorder(Node* root){
     cout << root->data << "(" << balance_factor(root) << ")" << " ";
     inorder(root->right);
 }
+
 void insert(Node* &root, int x){
     Node* newnode = new Node(x);
     newnode->data = x;
