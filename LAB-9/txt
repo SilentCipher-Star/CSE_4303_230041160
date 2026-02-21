@@ -1,0 +1,112 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Trie Node structure
+struct TrieNode
+{
+    TrieNode *children[26];
+    bool isEndOfWord;
+
+    TrieNode()
+    {
+        isEndOfWord = false;
+        for (int i = 0; i < 26; i++)
+            children[i] = nullptr;
+    }
+};
+
+// Trie class
+class Trie
+{
+    TrieNode *root;
+
+    // Recursive helper to display words
+    void displayHelper(TrieNode *node, string word)
+    {
+        if (node->isEndOfWord)
+            cout << word << " ";
+        for (int i = 0; i < 26; i++)
+        {
+            if (node->children[i])
+                displayHelper(node->children[i], word + char(i + 'a'));
+        }
+    }
+
+public:
+    Trie() { root = new TrieNode(); }
+
+    void insert(string word)
+    {
+        TrieNode *curr = root;
+        for (char c : word)
+        {
+            int idx = c - 'a';
+            if (!curr->children[idx])
+                curr->children[idx] = new TrieNode();
+            curr = curr->children[idx];
+        }
+        curr->isEndOfWord = true;
+    }
+
+    bool search(string word)
+    {
+        TrieNode *curr = root;
+        for (char c : word)
+        {
+            int idx = c - 'a';
+            if (!curr->children[idx])
+                return false;
+            curr = curr->children[idx];
+        }
+        return curr->isEndOfWord;
+    }
+
+    void display()
+    {
+        displayHelper(root, "");
+        cout << endl;
+    }
+};
+
+int main()
+{
+    Trie trie;
+    int N, Q;
+
+    // Input number of words and number of queries
+    cin >> N >> Q;
+
+    string word;
+
+    // Insert words
+    for (int i = 0; i < N; i++)
+    {
+        cin >> word;
+
+        // convert to lowercase
+        for (char &c : word)
+            c = tolower(c);
+
+        trie.insert(word);
+    }
+
+    // Display all words lexicographically
+    trie.display();
+
+    // Search query words
+    for (int i = 0; i < Q; i++)
+    {
+        cin >> word;
+
+        // convert to lowercase
+        for (char &c : word)
+            c = tolower(c);
+
+        cout << (trie.search(word) ? "T" : "F");
+        if (i != Q - 1)
+            cout << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
