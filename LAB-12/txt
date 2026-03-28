@@ -1,0 +1,136 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Fenwick
+{
+public:
+    int n;
+    vector<long long> tree;
+
+    Fenwick(int n)
+    {
+        this->n = n;
+        tree.assign(n + 1, 0);
+    }
+
+    // Linear construction
+    void build(vector<long long> &arr)
+    {
+        for (int i = 1; i <= n; i++)
+        {
+            tree[i] += arr[i];
+            int parent = i + (i & -i);
+            if (parent <= n)
+            {
+                tree[parent] += tree[i];
+            }
+        }
+    }
+
+    // Prefix sum with tracking indices used
+    long long prefixSum(int i, vector<int> &usedIndices)
+    {
+        long long sum = 0;
+        while (i > 0)
+        {
+            usedIndices.push_back(i);
+            sum += tree[i];
+            i -= (i & -i);
+        }
+        return sum;
+    }
+
+    // Range sum [l, r]
+    long long rangeSum(int l, int r,
+                       vector<int> &rightUsed,
+                       vector<int> &leftUsed)
+    {
+        long long rightSum = prefixSum(r, rightUsed);
+        long long leftSum = prefixSum(l - 1, leftUsed);
+        return rightSum - leftSum;
+    }
+
+    // Print ranges stored
+    void printRanges()
+    {
+        cout << "Ranges to be stored in the Fenwick Table:\n";
+        for (int i = 1; i <= n; i++)
+        {
+            int lsb = i & -i;
+            int start = i - lsb + 1;
+            cout << i << ":(" << start << "," << i << ") ";
+            if (i % 4 == 0)
+                cout << "\n";
+        }
+        cout << "\n";
+    }
+
+    // Print tree status
+    void printTree()
+    {
+        cout << "Status of Fenwick Tree (idx: value):\n";
+        for (int i = 1; i <= n; i++)
+        {
+            cout << i << ":" << tree[i] << " ";
+            if (i % 8 == 0)
+                cout << "\n";
+        }
+        cout << "\n";
+    }
+};
+
+int main()
+{
+    int N;
+    cin >> N;
+
+    vector<long long> arr(N + 1);
+    for (int i = 1; i <= N; i++)
+        cin >> arr[i];
+
+    Fenwick ft(N);
+
+    ft.printRanges();
+    ft.build(arr);
+    ft.printTree();
+
+    int Q;
+    cin >> Q;
+
+    for (int q = 1; q <= Q; q++)
+    {
+        int L, R;
+        cin >> L >> R;
+
+        vector<int> rightUsed, leftUsed;
+
+        long long ans = ft.rangeSum(L, R, rightUsed, leftUsed);
+
+        cout << "Query-" << q << ": Sum=" << ans << " [Tree idx: ";
+
+        cout << "sum(";
+        for (int i = 0; i < rightUsed.size(); i++)
+        {
+            cout << rightUsed[i];
+            if (i != rightUsed.size() - 1)
+                cout << ",";
+        }
+        cout << ")";
+
+        if (!leftUsed.empty())
+        {
+            cout << " - sum(";
+            for (int i = 0; i < leftUsed.size(); i++)
+            {
+                cout << leftUsed[i];
+                if (i != leftUsed.size() - 1)
+                    cout << ",";
+            }
+            cout << ")";
+        }
+
+        cout << "]\n";
+    }
+
+    return 0;
+}
